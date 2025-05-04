@@ -8,14 +8,27 @@
 		all: [],
 	};
 
+	function checkLink () {
+		//TODO: need a simple way to get that back into the html
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function () {
+			console.log(this.status);
+		};
+		xhttp.open("GET", href, true);
+		xhttp.send();
+	}
+
 	function get_links () {
 		var link_elements = document.querySelectorAll('a');
+
 		for (var i = 0; i < link_elements.length; i++) {
 			if (!link_elements[i].href) {
 				continue;
 			}
 
 			var href = link_elements[i].href;
+
+			//checkLink();
 
 			if (href.indexOf("mailto") === 0) {
 				links.mailto.push(href);
@@ -40,12 +53,22 @@
 			}
 			links.all.push(href);
 		}
-
-		//TODO: check if files at least give a 200 response, then maybe save that with the link info
 	}
 
 	function clean () {
-		//TODO: remove previous html before doing stuff;
+		links = {
+			pdf: [],
+			doc: [],
+			mailto: [],
+			image: [],
+			other: [],
+			all: [],
+		};
+
+		if (window.banani_link_counter_container) {
+			document.body.removeChild(window.banani_link_counter_container);
+			window.banani_link_counter_container = null;
+		}
 	}
 
 	function get_details_html (title, links) {
@@ -84,19 +107,37 @@
 			"background:#777",
 			"padding:16px",
 			"box-sizing:border-box",
+			"z-index:99999",
 		];
 
-		var html = '<div style="' + containerStyles.join(";") + '">';
-		html += get_details_html("PDFs", links.pdf);
-		html += get_details_html("DOCs", links.doc);
-		html += get_details_html("Mailtos", links.mailto);
-		html += get_details_html("Images", links.image);
-		html += get_details_html("Other", links.other);
-		html += get_details_html("All in order", links.all);
+		var closeButtonStyle = [
+			"display:flex",
+			"justify-content:center",
+			"align-items:center",
+			"text-align:center",
+			"position:fixed",
+			"right:8px",
+			"top:8px",
+			"width:24px",
+			"height:24px",
+			"background:#d00",
+			"border:0",
+			"color:#fff",
+		];
+
+		var html = '<div id="banani_link_counter_container" style="' + containerStyles.join(";") + '">';
+			html += '<button style="' + closeButtonStyle.join(";") + '" onclick="clear();">x</button>';
+			html += get_details_html("PDFs", links.pdf);
+			html += get_details_html("DOCs", links.doc);
+			html += get_details_html("Mailtos", links.mailto);
+			html += get_details_html("Images", links.image);
+			html += get_details_html("Other", links.other);
+			html += get_details_html("All in order", links.all);
 		html += '</div>';
 
-		document.body.innerHTML += html;
+		document.body.innerHTML = html + document.body.innerHTML;
 	}
+
 	clean();
 	get_links();
 	update_html();
