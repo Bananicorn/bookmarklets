@@ -67,7 +67,6 @@
 
 		if (window.banani_link_counter_container) {
 			document.body.removeChild(window.banani_link_counter_container);
-			window.banani_link_counter_container = null;
 		}
 	}
 
@@ -126,7 +125,7 @@
 		];
 
 		var html = '<div id="banani_link_counter_container" style="' + containerStyles.join(";") + '">';
-			html += '<button style="' + closeButtonStyle.join(";") + '" onclick="clear();">x</button>';
+			html += '<button id="banani_link_counter_close" style="' + closeButtonStyle.join(";") + '">x</button>';
 			html += get_details_html("PDFs", links.pdf);
 			html += get_details_html("DOCs", links.doc);
 			html += get_details_html("Mailtos", links.mailto);
@@ -136,6 +135,7 @@
 		html += '</div>';
 
 		document.body.innerHTML = html + document.body.innerHTML;
+		banani_link_counter_close.addEventListener("click", clean);
 	}
 
 	clean();
